@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Camera Stream</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        img {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>ESP32 Camera Stream</h1>
+
+    <!-- Display the camera stream -->
+    <img src="/stream" id="camera-stream" width="640" height="480" alt="Live Stream">
+
+    <div>
+        <!-- Control buttons (optional) -->
+        <button onclick="sendCommand('on')">Turn LED On</button>
+        <button onclick="sendCommand('off')">Turn LED Off</button>
+        <button onclick="sendCommand('enable')">Enable Stream</button>
+        <button onclick="sendCommand('disable')">Disable Stream</button>
+    </div>
+
+    <script>
+        function sendCommand(command) {
+            fetch(`/${command}`)
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
+</body>
+</html>
