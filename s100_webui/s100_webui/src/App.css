@@ -1,11 +1,11 @@
 body {
   display: flex;
-  justify-content: center; /* Center content horizontally */
-  align-items: center; /* Center content vertically */
-  height: 100vh; /* Full viewport height */
-  background-color: #f4f4f4; /* Light background for contrast */
-  margin: 0; /* Remove default margin */
-  font-family: Arial, sans-serif; /* Set a clean font */
+  justify-content: center;
+  align-items: center;
+  height: 100vh; 
+  background-color: #f4f4f4; 
+  margin: 0; 
+  font-family: Arial, sans-serif; 
 }
 
 .App {
@@ -33,7 +33,7 @@ button {
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(30, 144, 255, 0.5); /* Ensure there's a semicolon here */
+  box-shadow: 0 0 10px rgba(30, 144, 255, 0.5); 
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
