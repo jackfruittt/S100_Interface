@@ -1,24 +1,70 @@
-button {
-  background-color: #28a745;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin-right: 10px;
+body {
+  display: flex;
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  height: 100vh; /* Full viewport height */
+  background-color: #f4f4f4; /* Light background for contrast */
+  margin: 0; /* Remove default margin */
+  font-family: Arial, sans-serif; /* Set a clean font */
 }
 
+.App {
+  text-align: center;
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+h2 {
+  margin-top: 40px;
+  color: #666;
+}
+
+button {
+  background-color: #1e90ff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(30, 144, 255, 0.5); /* Ensure there's a semicolon here */
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+
 button:hover {
-  background-color: #218838;
+  box-shadow: 0 0 20px rgba(30, 144, 255, 0.8);
+  transform: scale(1.1);
 }
 
 button:active {
-  background-color: #1e7e34;
+  background-color: #0358d8;
 }
 
 button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
+
+.status-message {
+  margin-top: 20px;
+  color: #007bff;
+}
+
+.stream-container {
+  margin-top: 30px;
+}
+
+img {
+  width: 640px;
+  height: 480px;
+  border: 2px solid #333;
+  border-radius: 8px;
+}
+
