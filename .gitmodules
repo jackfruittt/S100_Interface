@@ -1,15 +1,9 @@
-[submodule "ESPAsyncWebServer"]
-	path = ESPAsyncWebServer
-	url = https://github.com/me-no-dev/ESPAsyncWebServer.git
 [submodule "esp32_web_server_pio/lib/ESPAsyncWebServer"]
 	path = esp32_web_server_pio/lib/ESPAsyncWebServer
 	url = https://github.com/me-no-dev/ESPAsyncWebServer.git
 [submodule "esp32_web_server_pio/lib/AsyncTCP"]
 	path = esp32_web_server_pio/lib/AsyncTCP
 	url = https://github.com/me-no-dev/AsyncTCP.git
-[submodule "esp32_web_server_pio/lib/esp32_web_server_pio/lib/CytronMotorDriver"]
-	path = esp32_web_server_pio/lib/esp32_web_server_pio/lib/CytronMotorDriver
-	url = https://github.com/CytronTechnologies/CytronMotorDriver.git
 [submodule "esp32_web_server_pio/lib/CytronMotorDriver"]
 	path = esp32_web_server_pio/lib/CytronMotorDriver
 	url = https://github.com/CytronTechnologies/CytronMotorDriver.git
