@@ -10,3 +10,6 @@
 [submodule "esp32_web_server_pio/lib/esp32_web_server_pio/lib/CytronMotorDriver"]
 	path = esp32_web_server_pio/lib/esp32_web_server_pio/lib/CytronMotorDriver
 	url = https://github.com/CytronTechnologies/CytronMotorDriver.git
+[submodule "esp32_web_server_pio/lib/CytronMotorDriver"]
+	path = esp32_web_server_pio/lib/CytronMotorDriver
+	url = https://github.com/CytronTechnologies/CytronMotorDriver.git

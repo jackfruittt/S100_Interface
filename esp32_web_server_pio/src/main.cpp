@@ -6,8 +6,14 @@
 #include "ESPAsyncWebServer.h"
 #include "AsyncTCP.h"
 #include "WiFi.h"
+#include "CytronMotorDriver.h"
 
 #define LED_PIN 2
+
+
+// Motor PINOUT
+CytronMD motorLeft(PWM_PWM, 3, 9);   // PWM 1A = Pin 3, PWM 1B = Pin 9.
+CytronMD motorRight(PWM_PWM, 10, 11); // PWM 2A = Pin 10, PWM 2B = Pin 11.
 
 // Wi-Fi credentials
 const char* ssid = "ORBI88";
@@ -17,7 +23,21 @@ const char* password = "rockylotus108";
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws"); // WebSocket endpoint
 
-// Function to connect to Wi-Fi
+//Setup enums for control commands
+enum Command { CMD_ON, CMD_OFF, CMD_FORWARD, CMD_BACKWARD, CMD_LEFT, CMD_RIGHT,  CMD_STOP, CMD_UNKNOWN };
+
+Command getCommand(String msg) {
+    if (msg == "on") return CMD_ON;
+    if (msg == "off") return CMD_OFF;
+    if (msg == "drive_forwards") return CMD_FORWARD;
+    if (msg == "drive_backwards") return CMD_BACKWARD;
+    if (msg == "tank_left") return CMD_LEFT;
+    if (msg == "tank_right") return CMD_RIGHT;
+    if (msg == "motor_stop") return CMD_STOP;
+    return CMD_UNKNOWN;
+}
+
+// Connect to WiFi
 void connectToWiFi() {
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
@@ -78,15 +98,81 @@ bool setupCamera() {
 void onWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
     if (type == WS_EVT_DATA) {
         String msg = String((char *)data);
-        if (msg == "on") {
-            digitalWrite(LED_PIN, HIGH);
-            client->text("LED turned ON");
-        } else if (msg == "off") {
-            digitalWrite(LED_PIN, LOW);
-            client->text("LED turned OFF");
+        Command cmd = getCommand(msg);
+
+        switch (cmd) {
+            case CMD_ON:
+                digitalWrite(LED_PIN, HIGH);
+                client->text("LED turned ON");
+                break;
+            case CMD_OFF:
+                digitalWrite(LED_PIN, LOW);
+                client->text("LED turned OFF");
+                break;
+            case CMD_FORWARD:
+                motorLeft.setSpeed(128);
+                motorRight.setSpeed(128);
+                client->text("Driving Forwards");
+                break;
+            case CMD_BACKWARD:
+                motorLeft.setSpeed(-128);
+                motorRight.setSpeed(-128);
+                client->text("Driving Backwards");
+                break;
+            case CMD_LEFT:
+                motorLeft.setSpeed(-128);
+                motorRight.setSpeed(128);
+                client->text("Turning Left");
+                break;
+            case CMD_RIGHT:
+                motorLeft.setSpeed(128);
+                motorRight.setSpeed(-128);
+                client->text("Turning Right");
+                break;
+            case CMD_STOP:
+                motorLeft.setSpeed(0);
+                motorRight.setSpeed(0);
+                client->text("Motors stopped");
+                break;
+            default:
+                client->text("Unknown command");
         }
     }
 }
+
+//Setup Motor Endpoints
+void setupMotorEndpoints(AsyncWebServer &server) {
+    server.on("/motor/drive_forwards", HTTP_GET, [](AsyncWebServerRequest *request) {
+        motorLeft.setSpeed(128);
+        motorRight.setSpeed(128);
+        request->send(200, "Driving Forwards");
+    });
+
+    server.on("/motor/drive_backwards", HTTP_GET, [](AsyncWebServerRequest *request) {
+        motorLeft.setSpeed(-128);
+        motorRight.setSpeed(-128);
+        request->send(200, "Driving Backwards");
+    });
+
+    server.on("/motor/tank_left", HTTP_GET, [](AsyncWebServerRequest *request) {
+        motorLeft.setSpeed(-128);
+        motorRight.setSpeed(128);
+        request->send(200, "Turning Left");
+    });
+
+    server.on("/motor/tank_right", HTTP_GET, [](AsyncWebServerRequest *request) {
+        motorLeft.setSpeed(128);
+        motorRight.setSpeed(-128);
+        request->send(200, "Turning Right");
+    });
+
+    server.on("/motor/stop", HTTP_GET, [](AsyncWebServerRequest *request) {
+        motorLeft.setSpeed(0);
+        motorRight.setSpeed(0);
+        request->send(200, "Motors Stopped");
+    });
+}
+
 
 // Setup the web server and WebSocket
 void setupServer() {
@@ -104,9 +190,9 @@ void setupServer() {
         digitalWrite(LED_PIN, LOW);
         request->send(200, "LED is OFF");
     });
-
-    // Video stream endpoint
-    server.on("/stream", HTTP_GET, handleStreamRequest);
+    
+    setupMotorEndpoints(server);
+    server.on("/stream", HTTP_GET, handleStreamRequest); // Video stream endpoint
 
     server.begin();
 }
