@@ -7,3 +7,13 @@
 [submodule "esp32_web_server_pio/lib/CytronMotorDriver"]
 	path = esp32_web_server_pio/lib/CytronMotorDriver
 	url = https://github.com/CytronTechnologies/CytronMotorDriver.git
+
+[submodule "esp32_Feather_V2_s100/lib/ESPAsyncWebServer"]
+	path = esp32_Feather_V2_s100/lib/ESPAsyncWebServer
+	url = https://github.com/me-no-dev/ESPAsyncWebServer.git
+[submodule "esp32_Feather_V2_s100/lib/AsyncTCP"]
+	path = esp32_Feather_V2_s100/lib/AsyncTCP
+	url = https://github.com/me-no-dev/AsyncTCP.git
+[submodule "esp32_Feather_V2_s100/lib/CytronMotorDriver"]
+	path = esp32_Feather_V2_s100/lib/CytronMotorDriver
+	url = https://github.com/CytronTechnologies/CytronMotorDriver.git
