@@ -17,3 +17,12 @@
 [submodule "esp32_Feather_V2_s100/lib/CytronMotorDriver"]
 	path = esp32_Feather_V2_s100/lib/CytronMotorDriver
 	url = https://github.com/CytronTechnologies/CytronMotorDriver.git
+[submodule "esp32_web_server_pio/lib/Ethernet"]
+	path = esp32_web_server_pio/lib/Ethernet
+	url = https://github.com/arduino-libraries/Ethernet.git
+[submodule "esp32_web_server_pio/lib/Ethernet_Generic"]
+	path = esp32_web_server_pio/lib/Ethernet_Generic
+	url = https://github.com/khoih-prog/Ethernet_Generic.git
+[submodule "esp32_web_server_pio/lib/WebServer_ESP32_SC_W5500"]
+	path = esp32_web_server_pio/lib/WebServer_ESP32_SC_W5500
+	url = https://github.com/khoih-prog/WebServer_ESP32_SC_W5500.git

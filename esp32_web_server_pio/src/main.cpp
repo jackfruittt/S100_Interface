@@ -1,8 +1,3 @@
-#include "AsyncJpegStreamResponse.h"
-#include "WebHandlers.h"
-#include "camera_pins.h"
-#include "Arduino.h"
-#include "esp_camera.h"
 #include "ESPAsyncWebServer.h"
 #include "AsyncTCP.h"
 #include "WiFi.h"
@@ -12,12 +7,12 @@
 
 
 // Motor PINOUT
-CytronMD motorLeft(PWM_PWM, 3, 9);   // PWM 1A = Pin 3, PWM 1B = Pin 9.
+CytronMD motorLeft(PWM_PWM, 14, 17);   // PWM 1A = Pin 3, PWM 1B = Pin 9.
 CytronMD motorRight(PWM_PWM, 10, 11); // PWM 2A = Pin 10, PWM 2B = Pin 11.
 
 // Wi-Fi credentials
-const char* ssid = "ORBI88";
-const char* password = "rockylotus108";
+const char* ssid = "Jackfruittt";
+const char* password = "pewpewpew";
 
 // Create Async Web Server on port 80
 AsyncWebServer server(80);
@@ -48,56 +43,22 @@ void connectToWiFi() {
     Serial.println("IP address: " + WiFi.localIP().toString());
 }
 
-// Setup camera configuration
-bool setupCamera() {
-    camera_config_t config;
-    config.ledc_channel = LEDC_CHANNEL_0;
-    config.ledc_timer = LEDC_TIMER_0;
-    config.pin_d0 = Y2_GPIO_NUM;
-    config.pin_d1 = Y3_GPIO_NUM;
-    config.pin_d2 = Y4_GPIO_NUM;
-    config.pin_d3 = Y5_GPIO_NUM;
-    config.pin_d4 = Y6_GPIO_NUM;
-    config.pin_d5 = Y7_GPIO_NUM;
-    config.pin_d6 = Y8_GPIO_NUM;
-    config.pin_d7 = Y9_GPIO_NUM;
-    config.pin_xclk = XCLK_GPIO_NUM;
-    config.pin_pclk = PCLK_GPIO_NUM;
-    config.pin_vsync = VSYNC_GPIO_NUM;
-    config.pin_href = HREF_GPIO_NUM;
-    config.pin_sccb_sda = SIOD_GPIO_NUM;
-    config.pin_sccb_scl = SIOC_GPIO_NUM;
-    config.pin_pwdn = PWDN_GPIO_NUM;
-    config.pin_reset = RESET_GPIO_NUM;
-    config.xclk_freq_hz = 20000000;
-    config.frame_size = FRAMESIZE_VGA;
-    config.pixel_format = PIXFORMAT_JPEG;
-    config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
-    config.fb_location = CAMERA_FB_IN_PSRAM;
-    config.jpeg_quality = 12;
-    config.fb_count = 1;
-
-    if (psramFound()) {
-        config.jpeg_quality = 20;
-        config.fb_count = 2;
-        config.grab_mode = CAMERA_GRAB_LATEST;
-    } else {
-        config.frame_size = FRAMESIZE_SVGA;
-        config.fb_location = CAMERA_FB_IN_DRAM;
-    }
-
-    esp_err_t err = esp_camera_init(&config);
-    if (err != ESP_OK) {
-        Serial.printf("Camera init failed with error 0x%x", err);
-        return false;
-    }
-    return true;
-}
-
 // WebSocket event handler
+unsigned long lastCommandTime = 0; // Track the last command timestamp
+const unsigned long commandCooldown = 100; // Cooldown period in milliseconds
+
 void onWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len) {
     if (type == WS_EVT_DATA) {
         String msg = String((char *)data);
+        unsigned long currentTime = millis();
+
+        // Ignore commands received within the cooldown period
+        if (currentTime - lastCommandTime < commandCooldown) {
+            return;
+        }
+        lastCommandTime = currentTime;
+
+        Serial.println("Received WebSocket command: " + msg); // Debug received command
         Command cmd = getCommand(msg);
 
         switch (cmd) {
@@ -135,10 +96,12 @@ void onWebSocketEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsE
                 client->text("Motors stopped");
                 break;
             default:
+                motorLeft.setSpeed(0);
                 client->text("Unknown command");
         }
     }
 }
+
 
 //Setup Motor Endpoints
 void setupMotorEndpoints(AsyncWebServer &server) {
@@ -192,7 +155,6 @@ void setupServer() {
     });
     
     setupMotorEndpoints(server);
-    server.on("/stream", HTTP_GET, handleStreamRequest); // Video stream endpoint
 
     server.begin();
 }
@@ -201,11 +163,6 @@ void setup() {
     Serial.begin(115200);
     pinMode(LED_PIN, OUTPUT);
     connectToWiFi();
-
-    if (!setupCamera()) {
-        Serial.println("Camera initialization failed!");
-        return;
-    }
 
     setupServer();
 }
@@ -216,9 +173,136 @@ void loop() {
 
 
 
+/*
+#if !( defined(ESP32) )
+#error This code is designed for (ESP32_S2/3, ESP32_C3 + W5500) to run on ESP32 platform! Please check your Tools->Board setting.
+#endif
+
+#define DEBUG_ETHERNET_WEBSERVER_PORT       Serial
+
+// Debug Level from 0 to 4
+#define _ETHERNET_WEBSERVER_LOGLEVEL_       3
 
 
 
+// Optional values to override default settings
+// Don't change unless you know what you're doing
+//#define ETH_SPI_HOST        SPI3_HOST
+//#define SPI_CLOCK_MHZ       25
+
+// Must connect INT to GPIOxx or not working
+
+
+
+#define INT_GPIO            16
+
+#define MISO_GPIO           21
+#define MOSI_GPIO           14
+#define SCK_GPIO            47
+#define CS_GPIO             38
+
+
+//////////////////////////////////////////////////////////
+
+#include <WebServer_ESP32_SC_W5500.h>
+
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0x01 };
+
+void setup() {
+
+Serial.begin(115200);
+
+  // To be called before ETH.begin()
+  ESP32_W5500_onEvent();
+
+  ETH.begin(MISO_GPIO, MOSI_GPIO, SCK_GPIO, CS_GPIO, INT_GPIO, SPI_CLOCK_MHZ, ETH_SPI_HOST, mac);
+
+  ESP32_W5500_waitForConnect();
+
+  String ethernet_dhcp_ip = ETH.localIP().toString();
+  Serial.print(F("HTTP EthernetWebServer is @ IP : "));
+  Serial.println(ethernet_dhcp_ip);
+
+}
+
+void loop() {
+
+}
+*/
+
+
+/*******************************************************************************
+ * THIS SOFTWARE IS PROVIDED IN AN "AS IS" CONDITION. NO WARRANTY AND SUPPORT
+ * IS APPLICABLE TO THIS SOFTWARE IN ANY FORM. CYTRON TECHNOLOGIES SHALL NOT,
+ * IN ANY CIRCUMSTANCES, BE LIABLE FOR SPECIAL, INCIDENTAL OR CONSEQUENTIAL
+ * DAMAGES, FOR ANY REASON WHATSOEVER.
+ ********************************************************************************
+ * DESCRIPTION:
+ *
+ * This example shows how to drive 2 motors using 4 PWM pins (2 for each motor)
+ * with 2-channel motor driver.
+ * 
+ * 
+ * CONNECTIONS:
+ * 
+ * Arduino D3  - Motor Driver PWM 1A Input
+ * Arduino D9  - Motor Driver PWM 1B Input
+ * Arduino D10 - Motor Driver PWM 2A Input
+ * Arduino D11 - Motor Driver PWM 2B Input
+ * Arduino GND - Motor Driver GND
+ *
+ *
+ * AUTHOR   : Kong Wai Weng
+ * COMPANY  : Cytron Technologies Sdn Bhd
+ * WEBSITE  : www.cytron.io
+ * EMAIL    : support@cytron.io
+ *
+ *******************************************************************************/
+/*
+ #include "CytronMotorDriver.h"
+
+
+// Configure the motor driver.
+CytronMD motor1(PWM_PWM, 14, 17);   // PWM 1A = Pin 3, PWM 1B = Pin 9.
+CytronMD motor2(PWM_PWM, 10, 11); // PWM 2A = Pin 10, PWM 2B = Pin 11.
+
+
+// The setup routine runs once when you press reset.
+void setup() {
+  
+}
+
+
+// The loop routine runs over and over again forever.
+void loop() {
+  motor1.setSpeed(128);   // Motor 1 runs forward at 50% speed.
+  motor2.setSpeed(-128);  // Motor 2 runs backward at 50% speed.
+  delay(1000);
+  
+  motor1.setSpeed(255);   // Motor 1 runs forward at full speed.
+  motor2.setSpeed(-255);  // Motor 2 runs backward at full speed.
+  delay(1000);
+
+  motor1.setSpeed(0);     // Motor 1 stops.
+  motor2.setSpeed(0);     // Motor 2 stops.
+  delay(1000);
+
+  motor1.setSpeed(-128);  // Motor 1 runs backward at 50% speed.
+  motor2.setSpeed(128);   // Motor 2 runs forward at 50% speed.
+  delay(1000);
+  
+  motor1.setSpeed(-255);  // Motor 1 runs backward at full speed.
+  motor2.setSpeed(255);   // Motor 2 runs forward at full speed.
+  delay(1000);
+
+  motor1.setSpeed(0);     // Motor 1 stops.
+  motor2.setSpeed(0);     // Motor 2 stops.
+  delay(1000);
+}
+
+
+
+*/
 
 
 
