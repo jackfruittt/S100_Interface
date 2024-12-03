@@ -16,8 +16,8 @@ CytronMD motorLeft(PWM_PWM, 3, 9);   // PWM 1A = Pin 3, PWM 1B = Pin 9.
 CytronMD motorRight(PWM_PWM, 10, 11); // PWM 2A = Pin 10, PWM 2B = Pin 11.
 
 // Wi-Fi credentials
-const char* ssid = "ORBI88";
-const char* password = "rockylotus108";
+const char* ssid = "Jackfruittt";
+const char* password = "pewpewpew";
 
 // Create Async Web Server on port 80
 AsyncWebServer server(80);
@@ -47,6 +47,7 @@ void connectToWiFi() {
     Serial.println("Connected to WiFi");
     Serial.println("IP address: " + WiFi.localIP().toString());
 }
+
 
 // Setup camera configuration
 bool setupCamera() {
@@ -199,8 +200,10 @@ void setupServer() {
 
 void setup() {
     Serial.begin(115200);
+    Serial.println("ESP32 connected to serial monitor");
     pinMode(LED_PIN, OUTPUT);
     connectToWiFi();
+
 
     if (!setupCamera()) {
         Serial.println("Camera initialization failed!");
@@ -208,7 +211,9 @@ void setup() {
     }
 
     setupServer();
+
 }
+
 
 void loop() {
     ws.cleanupClients(); // Clean up WebSocket clients

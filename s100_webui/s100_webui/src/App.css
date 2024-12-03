@@ -4,7 +4,7 @@ body {
   justify-content: space-between;
   align-items: center;
   height: 100vh;
-  background-color: #f4f4f4;
+  background-color: #141414;
   margin: 0;
   font-family: Arial, sans-serif;
 }
@@ -23,7 +23,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: white;
+  background-color: rgb(71, 71, 71);
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -43,7 +43,7 @@ img {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: white;
+  background-color: rgb(41, 41, 41);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   padding: 20px;
   width: 100%;
@@ -102,7 +102,69 @@ img {
   gap: 10px; 
 }
 
-.status-message {
+.speed-slider {
   margin-top: 20px;
-  color: #007bff;
 }
+
+.speed-slider label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.status {
+  margin-bottom: 20px;
+}
+
+.motor-status.active {
+  color: green;
+}
+
+.motor-status.inactive {
+  color: red;
+}
+
+.imu-data {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(41, 41, 41);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 40%;
+  border-radius: 10px;
+}
+
+.control-container {
+  display: flex;
+  flex-direction: row; 
+  justify-content: space-around;
+  align-items: stretch;
+  width: 100%;
+  margin-top: 20px;
+  gap: 20px;
+}
+
+.control-buttons, .imu-data {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(41, 41, 41);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.imu-data {
+  width: 100%; 
+}
+
+.control-buttons {
+  width: 100%;
+}
+
+

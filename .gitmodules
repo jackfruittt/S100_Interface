@@ -26,3 +26,27 @@
 [submodule "esp32_web_server_pio/lib/WebServer_ESP32_SC_W5500"]
 	path = esp32_web_server_pio/lib/WebServer_ESP32_SC_W5500
 	url = https://github.com/khoih-prog/WebServer_ESP32_SC_W5500.git
+[submodule "webserver_teensy_eth/lib/AsyncTCP"]
+	path = webserver_teensy_eth/lib/AsyncTCP
+	url = https://github.com/me-no-dev/AsyncTCP.git
+[submodule "webserver_teensy_eth/lib/ESPAsyncWebServer"]
+	path = webserver_teensy_eth/lib/ESPAsyncWebServer
+	url = https://github.com/me-no-dev/ESPAsyncWebServer.git
+[submodule "webserver_teensy_eth/lib/CytronMotorDriver"]
+	path = webserver_teensy_eth/lib/CytronMotorDriver
+	url = https://github.com/CytronTechnologies/CytronMotorDriver.git
+[submodule "webserver_teensy_eth/lib/Adafruit_BNO055"]
+	path = webserver_teensy_eth/lib/Adafruit_BNO055
+	url = https://github.com/adafruit/Adafruit_BNO055.git
+[submodule "webserver_teensy_eth/lib/Adafruit_Sensor"]
+	path = webserver_teensy_eth/lib/Adafruit_Sensor
+	url = https://github.com/adafruit/Adafruit_Sensor.git
+[submodule "webserver_teensy_eth/lib/EthernetWebServer"]
+	path = webserver_teensy_eth/lib/EthernetWebServer
+	url = https://github.com/khoih-prog/EthernetWebServer.git
+[submodule "webserver_teensy_eth/lib/BNO055"]
+	path = webserver_teensy_eth/lib/BNO055
+	url = https://github.com/arduino-libraries/BNO055.git
+[submodule "webserver_teensy_eth/lib/AsyncFSWebServer_Teensy41"]
+	path = webserver_teensy_eth/lib/AsyncFSWebServer_Teensy41
+	url = https://github.com/khoih-prog/AsyncFSWebServer_Teensy41.git
