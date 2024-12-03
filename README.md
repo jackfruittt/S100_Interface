@@ -7,3 +7,4 @@ esp_web_server_pio is for an esp32 S3 Dev and uses wifi to connect to the server
 # WEB UI for Teensy
 webserver_teensy_eth is to run the same code as the esp32 but instead for a teensy via ethernet. This should allow for much greater throughput. Code is to be tested (TBT).
 
+![Web UI](readme_resources/webui.png)
