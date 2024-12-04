@@ -1,61 +1,60 @@
+#light {
+  background-color: rgb(255, 255, 255);
+  color: black
+}
+
+#dark {
+  background-color: #0f0f0f;
+  color: white
+}
+
 body {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  height: 100vh;
-  background-color: #141414;
   margin: 0;
-  font-family: Arial, sans-serif;
+  padding: 0;
 }
 
 .App {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  flex-direction: row;
+  gap: 20px
 }
 
-.stream-container {
-  flex: 1;
+#light .control-panel {
+  background-color: #ebebeb;
+}
+
+#dark .control-panel {
+  background-color: #1d1d1d;
+}
+
+.control-panel {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgb(71, 71, 71);
-  padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  width: 100%;
+  padding: 20px;
+  width: 10%;
   border-radius: 10px;
 }
 
-img {
-  width: 640px;
-  height: 480px;
-  border: 2px solid #333;
-  border-radius: 8px;
+#light .control-panel button {
+  background-color: #2b95ff; 
 }
 
-.control-buttons {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgb(41, 41, 41);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  width: 100%;
-  border-radius: 10px;
+#dark .control-panel button {
+  background-color: #1e90ff; 
 }
 
-.control-buttons button {
+.control-panel button {
   margin: 5px;
   width: 100px;
   height: 50px;
   font-size: 16px;
-  background-color: #1e90ff; 
   color: white;
   border: none;
   border-radius: 5px;
@@ -64,19 +63,23 @@ img {
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.control-buttons button:hover {
+.control-panel button:hover {
   box-shadow: 0 0 20px rgba(30, 144, 255, 0.8);
   transform: scale(1.1);
 }
 
-.control-buttons button:active {
-  background-color: #0358d8;
+#light .control-panel .led-button {
+  background-color: #f86544; 
 }
 
-.control-buttons .led-button {
+#dark .control-panel .led-button {
+  background-color: #ff5733; 
+}
+
+.control-panel .led-button {
   width: 200px;
   height: 50px;
-  background-color: #ff5733; /* Ensure orange color */
+  background-color: #ff5733; 
   color: white;
   border: none;
   border-radius: 5px;
@@ -87,14 +90,21 @@ img {
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-.control-buttons .led-button:hover {
+.control-panel .led-button:hover {
   box-shadow: 0 0 20px rgba(255, 87, 51, 0.8);
   transform: scale(1.1);
 }
 
-.control-buttons .led-button:active {
-  background-color: #c44129;
+.control-panel button:active {
+  filter: brightness(85%); 
+  transform: scale(1.01); 
 }
+
+.control-panel .led-button:active {
+  filter: brightness(85%);
+  transform: scale(1.01);
+}
+
 
 .middle-row {
   display: flex;
@@ -112,39 +122,49 @@ img {
   font-size: 16px;
 }
 
-.status {
-  margin-bottom: 20px;
+.motor-status p {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
-.motor-status.active {
+.motor-status .active {
   color: green;
 }
 
-.motor-status.inactive {
-  color: red;
+.motor-status .inactive {
+  color: red; 
 }
 
-.imu-data {
-  flex: 1;
+
+#light .imu-container {
+  background-color: #ebebeb;
+}
+
+#dark .imu-container {
+  background-color: #1d1d1d;
+}
+
+.imu-container {
+  flex: none;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgb(41, 41, 41);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  width: 40%;
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 20px; 
   border-radius: 10px;
+  width: fit-content; 
+  max-width: 90%;
+  text-align: center; 
+  gap: 20px;
 }
 
-.control-container {
-  display: flex;
-  flex-direction: row; 
-  justify-content: space-around;
-  align-items: stretch;
-  width: 100%;
-  margin-top: 20px;
-  gap: 20px;
+#light .imu-data {
+  background-color: #ebebeb;
+}
+
+#dark .imu-data{
+  background-color: #1d1d1d;
 }
 
 .control-buttons, .imu-data {
@@ -153,18 +173,47 @@ img {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: rgb(41, 41, 41);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   padding: 20px;
   border-radius: 10px;
 }
 
 .imu-data {
-  width: 100%; 
+  width: 20%; 
 }
 
 .control-buttons {
   width: 100%;
 }
+
+@media (max-width: 768px) {
+  .imu-container {
+    width: 100%; 
+    padding: 15px; 
+  }
+}
+
+.switch-container {
+  display: flex;
+  gap: 10px; 
+  position: fixed; 
+  top: 10px;
+  right: 10px;
+  justify-content: center;
+  align-items: center;
+  width: auto; 
+  height: auto; 
+  padding: 10px; 
+}
+
+.theme-label {
+  font-size: 16px; 
+  color: inherit; 
+}
+
+.theme-switch {
+  cursor: pointer; 
+}
+
+
 
 
