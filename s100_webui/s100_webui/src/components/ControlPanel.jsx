@@ -1,12 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import useROS from "./rosConnector"; 
 
 function ControlPanel({ ws }) {
   const [isMotorActive, setIsMotorActive] = useState(false);
   const [motorSpeed, setMotorSpeed] = useState(50);
 
+  // Callback to handle messages received from ROS
+  const handleRosMessage = (message) => {
+    console.log(`Relaying ROS message to WebSocket: ${message}`);
+    sendWebSocketMessage(message);
+  };
+
+  const { rosConnected, rosStatusMessage, listenToRosTopic } = useROS(handleRosMessage);
+
+  useEffect(() => {
+    if (rosConnected) {
+      listenToRosTopic(); // Start listening when ROS is connected
+    }
+  }, [rosConnected]);
+
   const sendWebSocketMessage = (message) => {
     if (ws && ws.readyState === WebSocket.OPEN) {
+      console.log(`Sending WebSocket message: ${message}`);
       ws.send(message);
+    } else {
+      console.error("WebSocket is not connected.");
     }
   };
 
@@ -36,6 +54,10 @@ function ControlPanel({ ws }) {
     }
   };
 
+  const handleLedControl = (state) => {
+    sendWebSocketMessage(state); // Send LED control directly via WebSocket
+  };
+
   return (
     <div className="control-panel">
       <div className="motor-status">
@@ -45,8 +67,8 @@ function ControlPanel({ ws }) {
       </div>
       <button
         className="led-button"
-        onMouseDown={() => sendWebSocketMessage("on")}
-        onMouseUp={() => sendWebSocketMessage("off")}
+        onMouseDown={() => handleLedControl("on")}
+        onMouseUp={() => handleLedControl("off")}
       >
         LED
       </button>
@@ -90,9 +112,16 @@ function ControlPanel({ ws }) {
           onChange={handleSpeedChange}
         />
       </div>
+      <div className="ros-status">
+        <p>{rosStatusMessage}</p> {/* Show ROS connection status */}
+      </div>
     </div>
   );
 }
 
 export default ControlPanel;
+
+
+
+
 

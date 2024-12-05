@@ -3,6 +3,7 @@ import ReactSwitch from "react-switch";
 import IMU3DShape from "./components/IMU3DShape";
 import ControlPanel from "./components/ControlPanel";
 import IMUData from "./components/IMUData";
+import useROS from "./components/rosConnector";
 import "./App.css";
 
 export const ThemeContext = createContext(null);
@@ -24,6 +25,8 @@ function App() {
   const [ws, setWs] = useState(null);
   const [statusMessage, setStatusMessage] = useState("");
   const [imuData, setImuData] = useState({ roll: 0, pitch: 0, yaw: 0 });
+
+  const { rosStatusMessage, sendRosMessage, listenToRosTopic } = useROS();
 
   const toggleTheme = () => {
     setTheme((curr) => (curr === "light" ? "dark" : "light"));
@@ -100,6 +103,11 @@ function App() {
           />
         </div>
         <p className="status-message">{statusMessage}</p>
+        <div className="ros-connection">
+          <p>{rosStatusMessage}</p>
+          <button onClick={sendRosMessage}>Send Message to ROS</button>
+          <button onClick={listenToRosTopic}>Listen to ROS Topic</button>
+        </div>
       </div>
     </ThemeContext.Provider>
   );
