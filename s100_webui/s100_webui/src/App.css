@@ -179,6 +179,9 @@ body {
 
 .imu-data {
   width: 20%; 
+  white-space: nowrap;  /* Prevent text wrapping */
+  overflow: hidden;     /* Hide overflowing text if it exceeds the container */
+  text-overflow: ellipsis; 
 }
 
 .control-buttons {

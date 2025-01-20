@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from "react";
-import useROS from "./rosConnector"; 
+import useROS from "./rosConnector";
 
-function ControlPanel({ ws }) {
+function ControlPanel() {
   const [isMotorActive, setIsMotorActive] = useState(false);
   const [motorSpeed, setMotorSpeed] = useState(50);
+  const [statusMessage, setStatusMessage] = useState("");
+
+  const TEENSY_IP = "http://192.168.2.177";
 
   // Callback to handle messages received from ROS
   const handleRosMessage = (message) => {
-    console.log(`Relaying ROS message to WebSocket: ${message}`);
-    sendWebSocketMessage(message);
+    console.log(`Relaying ROS message via HTTP: ${message}`);
+    sendHttpRequest(message);
   };
 
   const { rosConnected, rosStatusMessage, listenToRosTopic } = useROS(handleRosMessage);
@@ -19,43 +22,43 @@ function ControlPanel({ ws }) {
     }
   }, [rosConnected]);
 
-  const sendWebSocketMessage = (message) => {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      console.log(`Sending WebSocket message: ${message}`);
-      ws.send(message);
-    } else {
-      console.error("WebSocket is not connected.");
+  // Send HTTP request to Teensy
+  const sendHttpRequest = async (path) => {
+    try {
+      const response = await fetch(`${TEENSY_IP}${path}`, { method: "GET" });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.text();
+      setStatusMessage(`Response: ${data}`);
+    } catch (error) {
+      setStatusMessage(`Failed to fetch: ${error.message}`);
+      console.error("HTTP Request Error:", error);
     }
-  };
-
-  const debouncedSendSpeed = (message) => {
-    let timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(() => sendWebSocketMessage(message), 300);
   };
 
   const handleSpeedChange = (event) => {
     const speed = parseInt(event.target.value, 10);
     setMotorSpeed(speed);
-    debouncedSendSpeed(`speed:${speed}`);
+    sendHttpRequest(`/set_speed?value=${speed}`);
   };
 
   const handleDrive = (command) => {
     if (!isMotorActive) {
       setIsMotorActive(true); // Mark motor as active
-      sendWebSocketMessage(`${command}:${motorSpeed}`); // Include speed in command
+      sendHttpRequest(`/${command}?speed=${motorSpeed}`);
     }
   };
 
   const handleStop = () => {
     if (isMotorActive) {
       setIsMotorActive(false); // Mark motor as inactive
-      sendWebSocketMessage("motor_stop");
+      sendHttpRequest("/motor_stop");
     }
   };
 
   const handleLedControl = (state) => {
-    sendWebSocketMessage(state); // Send LED control directly via WebSocket
+    sendHttpRequest(`/${state}`); // Send LED control directly via HTTP
   };
 
   return (
@@ -115,11 +118,14 @@ function ControlPanel({ ws }) {
       <div className="ros-status">
         <p>{rosStatusMessage}</p> {/* Show ROS connection status */}
       </div>
+      <p className="status-message">{statusMessage}</p> {/* Show HTTP response or errors */}
     </div>
   );
 }
 
 export default ControlPanel;
+
+
 
 
 

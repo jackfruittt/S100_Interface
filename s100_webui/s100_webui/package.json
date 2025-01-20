@@ -1,6 +1,7 @@
 {
   "name": "s100_webui",
   "private": true,
+  "proxy": "http://192.168.2.177",
   "version": "0.0.0",
   "type": "module",
   "scripts": {

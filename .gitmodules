@@ -50,3 +50,6 @@
 [submodule "webserver_teensy_eth/lib/AsyncFSWebServer_Teensy41"]
 	path = webserver_teensy_eth/lib/AsyncFSWebServer_Teensy41
 	url = https://github.com/khoih-prog/AsyncFSWebServer_Teensy41.git
+[submodule "Ethernet_Server_New/lib/arduinoWebSockets"]
+	path = Ethernet_Server_New/lib/arduinoWebSockets
+	url = https://github.com/Links2004/arduinoWebSockets.git
