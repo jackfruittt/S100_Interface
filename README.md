@@ -14,3 +14,6 @@ webserver_teensy_eth is to run the same code as the esp32 but instead for a teen
 - vite `v5.4.11`
 
 Make sure npm is installed globally. Once the repo is cloned cd into `S100_Interface/s100_webui/s100_webui/` and do `npm install`. This should install vite and all packages that the web UI uses.
+
+# ROS Integration
+Currently runs on ROS Noetic via ROSBridge. Theretically can run on ROS2 because the topics don't generate unless the bridge is running and all data comes from the react UI.
