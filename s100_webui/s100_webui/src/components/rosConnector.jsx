@@ -77,7 +77,39 @@ const useROS = (onMessageCallback) => {
     }
   };
 
-  return { rosStatusMessage, rosConnected, listenToRosTopic, sendRosMessage };
+  const publishIMUData = (imuData) => {
+    if (ros && rosConnected) {
+      const topic = new ROSLIB.Topic({
+        ros: ros,
+        name: "/react_imu",
+        messageType: "geometry_msgs/Vector3",
+      });
+  
+      topic.advertise();
+  
+      const message = new ROSLIB.Message({
+        x: imuData.roll,
+        y: imuData.pitch,
+        z: imuData.yaw,
+      });
+  
+      topic.publish(message);
+      setRosStatusMessage(
+        `IMU data published to ROS: Roll=${imuData.roll}, Pitch=${imuData.pitch}, Yaw=${imuData.yaw}`
+      );
+    } else {
+      setRosStatusMessage("Unable to publish IMU data. Not connected to ROS.");
+    }
+  };  
+
+  return {
+    rosStatusMessage,
+    rosConnected,
+    listenToRosTopic,
+    sendRosMessage,
+    publishIMUData, 
+  };
+  
 };
 
 export default useROS;

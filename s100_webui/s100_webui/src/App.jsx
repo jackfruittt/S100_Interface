@@ -22,9 +22,9 @@ const debounce = (func, delay) => {
 function App() {
   const [theme, setTheme] = useState("light");
   const [statusMessage, setStatusMessage] = useState("");
-  const [imuData, setImuData] = useState({ roll: 0, pitch: 0, yaw: 0 });
+  const [imuData, setImuData,] = useState({ roll: 0, pitch: 0, yaw: 0 });
 
-  const { rosStatusMessage, sendRosMessage, listenToRosTopic } = useROS();
+  const { rosStatusMessage, sendRosMessage, listenToRosTopic, publishIMUData } = useROS();
 
   const toggleTheme = () => {
     setTheme((curr) => (curr === "light" ? "dark" : "light"));
@@ -49,12 +49,23 @@ function App() {
       const data = await sendHttpRequest("/imu");
       if (data) {
         setImuData(data);
+        publishIMUData(data);
+        
       }
     };
 
     const interval = setInterval(fetchIMUData, 150); // Fetch IMU data every 500ms
     return () => clearInterval(interval); // Cleanup interval on unmount
   }, []);
+
+  useEffect(() => {
+    // Publish data every 150ms
+    const publishInterval = setInterval(() => {
+      publishIMUData(imuData);
+    }, 100);
+
+    return () => clearInterval(publishInterval); 
+  }, [imuData, publishIMUData]);
 
   // Command Handlers
   const handleCommand = async (command) => {
@@ -94,6 +105,7 @@ function App() {
           <p>{rosStatusMessage}</p>
           <button onClick={sendRosMessage}>Send Message to ROS</button>
           <button onClick={listenToRosTopic}>Listen to ROS Topic</button>
+          <button onClick={() => publishIMUData(imuData)}>Publish IMU Data</button>
         </div>
       </div>
     </ThemeContext.Provider>
