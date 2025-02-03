@@ -1,3 +1,4 @@
+/*
 import React, { useState, useEffect, useContext, createContext } from "react";
 import ReactSwitch from "react-switch";
 import IMU3DShape from "./components/IMU3DShape";
@@ -28,44 +29,65 @@ function App() {
 
   const toggleTheme = () => {
     setTheme((curr) => (curr === "light" ? "dark" : "light"));
+  };// Create a new container component for ROS-connect components
+  const RosContainer = () => {
+    const { rosStatusMessage, sendRosMessage, listenToRosTopic } = useROS();
+  
+    return (
+      <div className="ros-container">
+        <p>Ros Status: {rosStatusMessage}</p>
+        <button onClick={sendRosMessage}>Send ROS Message</button>
+        <button onClick={listenToRosTopic}>Listen to ROS Topic</button>
+      </div>
+    );
   };
 
   // Function to send HTTP requests to Teensy
-  const sendHttpRequest = async (path, method = "GET") => {
+  const sendHttpRequest = async (path, method = "GET", signal = null) => {
     try {
-      const response = await fetch(`${TEENSY_IP}${path}`, { method });
-      const data = await response.json();
-      return data;
+      const options = { method };
+      if (signal) options.signal = signal;
+  
+      const response = await fetch(`${TEENSY_IP}${path}`, options);
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      
+      return await response.json();
     } catch (error) {
-      setStatusMessage(`Error: ${error.message}`);
       console.error("HTTP Request Error:", error);
+      return null;
+    }
+  };
+  
+  const fetchIMUData = async () => {
+    try {
+      const data = await sendHttpRequest("/imu");
+      if (data) setImuData(data);
+    } catch (error) {
+      console.error("Fetch IMU error:", error);
     }
   };
 
-  
-  // Fetch IMU Data periodically
   useEffect(() => {
-    const fetchIMUData = async () => {
-      const data = await sendHttpRequest("/imu");
-      if (data) {
-        setImuData(data);
-        publishIMUData(data);
-        
-      }
-    };
+    const intervalId = setInterval(() => {
+      fetchIMUData(); // Periodically fetch IMU data
+    }, 100); // Every 2 seconds
 
-    const interval = setInterval(fetchIMUData, 150); // Fetch IMU data every 500ms
-    return () => clearInterval(interval); // Cleanup interval on unmount
+    // Cleanup on unmount
+    return () => clearInterval(intervalId);
   }, []);
+   
+  // Ping message to keep the connection alive
+  const sendPing = async () => {
+    await sendHttpRequest("/ping"); // Send a ping request to the Teensy
+  };
 
   useEffect(() => {
-    // Publish data every 150ms
-    const publishInterval = setInterval(() => {
-      publishIMUData(imuData);
-    }, 100);
+    const pingInterval = setInterval(() => {
+      sendPing(); 
+    }, 5000); // Every 10 seconds
 
-    return () => clearInterval(publishInterval); 
-  }, [imuData, publishIMUData]);
+    return () => clearInterval(pingInterval);
+  }, []);
 
   // Command Handlers
   const handleCommand = async (command) => {
@@ -102,11 +124,71 @@ function App() {
         </div>
         <p className="status-message">{statusMessage}</p>
         <div className="ros-connection">
-          <p>{rosStatusMessage}</p>
-          <button onClick={sendRosMessage}>Send Message to ROS</button>
-          <button onClick={listenToRosTopic}>Listen to ROS Topic</button>
-          <button onClick={() => publishIMUData(imuData)}>Publish IMU Data</button>
+        <RosContainer />
         </div>
+      </div>
+    </ThemeContext.Provider>
+  );
+}
+
+export default App;
+*/
+import React, { useState, useEffect, useContext, createContext } from "react";
+import ReactSwitch from "react-switch";
+import IMU3DShape from "./components/IMU3DShape";
+import ControlPanel from "./components/ControlPanel";
+import IMUData from "./components/IMUData";
+import useMQTT from "./components/useMQTT"; // Use MQTT instead of HTTP
+import "./App.css";
+
+export const ThemeContext = createContext(null);
+
+function App() {
+  const [theme, setTheme] = useState("light");
+  const [statusMessage, setStatusMessage] = useState("");
+
+  // **Use MQTT for IMU data & command sending**
+  const { imuData, sendCommand } = useMQTT();
+
+  const toggleTheme = () => {
+    setTheme((curr) => (curr === "light" ? "dark" : "light"));
+  };
+
+  // **Command Handler now uses MQTT**
+  const handleCommand = (command) => {
+    sendCommand(command);
+    setStatusMessage(`Sent command: ${command}`);
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      <div className="App" id={theme}>
+        <div className="switch-container">
+          <label className="theme-label">
+            {theme === "dark" ? "Dark Mode" : "Light Mode"}
+          </label>
+          <ReactSwitch
+            className="theme-switch"
+            onChange={toggleTheme}
+            checked={theme === "dark"}
+          />
+        </div>
+
+        <ControlPanel
+          onCommand={handleCommand}
+          onSetSpeed={(speed) => handleCommand(`drive_forwards?speed=${speed}`)}
+        />
+
+        <div className="imu-container">
+          <IMUData imuData={imuData} />
+          <IMU3DShape
+            roll={imuData.roll}
+            pitch={imuData.pitch}
+            yaw={imuData.yaw}
+          />
+        </div>
+
+        <p className="status-message">{statusMessage}</p>
       </div>
     </ThemeContext.Provider>
   );
