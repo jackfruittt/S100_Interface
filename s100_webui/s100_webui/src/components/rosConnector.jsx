@@ -20,12 +20,12 @@ const useROS = (onMessageCallback) => {
 
     rosInstance.on("error", (error) => {
       setRosConnected(false);
-      setRosStatusMessage(`Error connecting to ROS: ${error.message}`);
+      //setRosStatusMessage(`Error connecting to ROS: ${error.message}`);
     });
 
     rosInstance.on("close", () => {
       setRosConnected(false);
-      setRosStatusMessage("Connection to ROS closed");
+      //setRosStatusMessage("Connection to ROS closed");
       setTimeout(() => rosInstance.connect(ROSBRIDGE_IP), 5000); // Retry connection
     });
     

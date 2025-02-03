@@ -217,6 +217,37 @@ body {
   cursor: pointer; 
 }
 
+.ros-container {
+  flex: none;
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  padding: 20px; 
+  border-radius: 10px;
+  width: fit-content; 
+  max-width: 90%;
+  text-align: center; 
+  gap: 20px;
+}
+.ros-status {
+  width: 20%; 
+  white-space: nowrap;  /* Prevent text wrapping */
+  overflow: hidden;     /* Hide overflowing text if it exceeds the container */
+  text-overflow: ellipsis; 
+
+}
+
+
+#dark .ros-container {
+  background-color: #1d1d1d; 
+}
+
+#light .ros-container {
+  background-color: #ebebeb;
+}
+
+
 
 
 
