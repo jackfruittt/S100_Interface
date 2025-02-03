@@ -10,7 +10,10 @@
     "start": "concurrently \"vite\" \"electron .\"",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start:prod": "NODE_ENV=production electron .",
+    "package": "electron-builder --win", 
+    "dist": "electron-builder"
   },
   "dependencies": {
     "mqtt": "^5.10.3",
@@ -34,6 +37,27 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.11.0",
-    "vite": "^5.4.11"
+    "vite": "^5.4.11",
+    "dotenv": "^10.0.0"
+  },
+  "build": {
+    "appId": "com.yourcompany.s100webui",
+    "productName": "S100 WebUI",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "dist/**/*",
+      "main.cjs",
+      "preload.js",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "win": {
+      "target": "nsis"
+    }
   }
 }
+

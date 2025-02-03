@@ -9,15 +9,17 @@ function createWindow() {
     height: 600,
     webPreferences: {
       nodeIntegration: true,
-      preload: path.join(__dirname, "preload.js"), //  preload.js if neeed
+     // preload: path.join(__dirname, "preload.js"), //  preload.js if neeed
     },
   });
 
   // Load React app's index.html file
-  mainWindow.loadURL("http://localhost:3000");
+  mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
 
   // Open DevTools 
-  mainWindow.webContents.openDevTools();
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.webContents.openDevTools();
+  }
 
   mainWindow.on("closed", () => {
     mainWindow = null;
