@@ -139,12 +139,13 @@ import IMU3DShape from "./components/IMU3DShape";
 import ControlPanel from "./components/ControlPanel";
 import IMUData from "./components/IMUData";
 import useMQTT from "./components/useMQTT"; // Use MQTT instead of HTTP
+//import MQTTBroker from './mqttBroker';
 import "./App.css";
 
 export const ThemeContext = createContext(null);
 
 function App() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState("dark");
   const [statusMessage, setStatusMessage] = useState("");
 
   // **Use MQTT for IMU data & command sending**

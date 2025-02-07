@@ -239,7 +239,7 @@ void loop() {
 #include "CytronMotorDriver.h"
 
 // **MQTT Configuration**
-#define MQTT_SERVER "192.168.2.100"
+#define MQTT_SERVER "192.168.2.1"
 #define MQTT_PORT 1883
 #define MQTT_CLIENT_ID "TeensyClient"
 #define MQTT_TOPIC_CMD "teensy/cmd"
