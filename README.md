@@ -25,31 +25,51 @@ When you clone the repository the npm packages may not clone. Verify the followi
 - vite `v5.4.14`
 - ws `v8.18.0`
 
-  # Running GUI
-  To run the GUI there are 2 ways
-  Option 1: With no application built (still developing)
-  in terminal do:
-  ```
-  npm run dev
-  ```
-This will genrate a localHost link, simply click on that to open if it does not automatically open in your default browser
-
-Option 2: Application built (using concurrent)
-
-The concurrent library is used to build a react desktop application as to using a webUI, this way it's more a bit more professional and also the preferred option when working with industry partners (which is why it can also run without ROS, ROS is good for universitites but not for clients where operators aren't engineers).
+# Running GUI
+There are two ways to run the GUI. Running in dev mode and running application tests if you've built a desktop app using concurrently. The instructions below go over both. 
 
 ## Configuration
 
-Ensure your `package.json` includes the necessary scripts for concurrently running multiple processes. Add or modify the scripts section:
+Ensure your `package.json` includes the necessary scripts for concurrently running multiple processes. It should currently look like this based off my last push:
 
 ```json
-"scripts": {
-  "start": "react-scripts start",
-  "build": "react-scripts build",
-  "test": "react-scripts test",
-  "eject": "react-scripts eject",
-  "server": "node ../server/server.js",
-  "dev": "concurrently \"npm run server\" \"npm run start\""
+{
+  "name": "s100_webui",
+  "private": true,
+  "proxy": "http://192.168.2.177",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "start": "concurrently \"node src/mqttBroker.cjs\" \"vite\""
+  },
+  "dependencies": {
+    "aedes": "^0.51.3",
+    "mqtt": "^5.10.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-switch": "^7.0.0",
+    "roslib": "^1.4.1",
+    "three": "^0.171.0",
+    "three-csg-ts": "^3.2.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "globals": "^15.11.0",
+    "vite": "^5.4.11"
+  }
 }
 ```
 
@@ -61,14 +81,13 @@ Ensure your `package.json` includes the necessary scripts for concurrently runni
 
 To run both the React frontend and backend server concurrently:
 
-```
-npm run dev
-```
+`npm start`
+This uses Concurrently to run `node src/mqttBroker.cjs` and `vite` simultaneously.
+Alternatively, if you only want to run the Vite development server without the MQTT broker:
+`npm run dev`
+Using `npm run dev` is only useful if you want to see the layout of the GUI, it will not allow you to connect to the robot properly
 
-This command will:
-- Start your backend server
-- Start the React development server
-- Open the application in your default browser at [http://localhost:3000](http://localhost:3000)
+Once run, the application will open in your default browser at [http://localhost:3000](http://localhost:3000)
 
 ### Production Build
 
@@ -190,6 +209,41 @@ console.timeEnd('Operation');
 
 3. **Node module resolution:**
    - If you encounter module resolution issues, check your import paths and ensure all dependencies are installed correctly.
+  
+## MQTT Setup
+
+The application includes an MQTT broker using `aedes` that runs alongside the Vite development server when using the `npm start` command. The MQTT broker is defined in `src/mqttBroker.cjs`.
+
+### MQTT Debugging
+
+To debug MQTT communication:
+
+1. Use MQTT Explorer or similar tools to monitor messages
+2. Add console logging in your MQTT subscription handlers
+3. Check browser console for connection errors
+
+### Vite Configuration
+
+If you need to modify Vite's configuration:
+
+1. Edit the `vite.config.js` file at the root of your project
+2. Restart your development server to apply changes
+
+## Common Issues and Solutions
+
+1. **MQTT Connectivity Issues:**
+   - Ensure the MQTT broker is running
+   - Check that client IDs are unique
+   - Verify connection parameters in your code
+
+2. **CORS issues:**
+   - Remember that the application is proxied to `http://192.168.2.177` as specified in your package.json
+   - For additional CORS settings, modify your Vite configuration
+
+3. **ROS Connection Issues:**
+   - Ensure your ROS environment is properly set up and running
+   - Check network connectivity between the browser and ROS nodes
+   - Verify websocket connections are not being blocked
 
 
 # ROS Integration
